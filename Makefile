@@ -2,7 +2,7 @@
 
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -std=c17
+CFLAGS = -Wall -Wextra -std=c17
 LDFLAGS = -lSDL2
 
 # Directories

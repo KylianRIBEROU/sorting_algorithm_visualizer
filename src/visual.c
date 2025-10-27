@@ -1,7 +1,7 @@
 #include "visual.h"
 #include <stdio.h>
 
-int visual_init(SDL_Window** window, SDL_Renderer** renderer) {
+int init_sdl_window(SDL_Window** window, SDL_Renderer** renderer) {
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         fprintf(stderr, "SDL initialization failed: %s\n", SDL_GetError());
@@ -37,7 +37,7 @@ int visual_init(SDL_Window** window, SDL_Renderer** renderer) {
     return 0;
 }
 
-void visual_cleanup(SDL_Window* window, SDL_Renderer* renderer) {
+void clean_up_sdl_window(SDL_Window* window, SDL_Renderer* renderer) {
     if (renderer != NULL) {
         SDL_DestroyRenderer(renderer);
     }
@@ -47,17 +47,17 @@ void visual_cleanup(SDL_Window* window, SDL_Renderer* renderer) {
     SDL_Quit();
 }
 
-void visual_clear(SDL_Renderer* renderer) {
+void clear_sdl_window(SDL_Renderer* renderer) {
     // Set background color to dark gray
     SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
     SDL_RenderClear(renderer);
 }
 
-void visual_present(SDL_Renderer* renderer) {
+void refresh_present_window(SDL_Renderer* renderer) {
     SDL_RenderPresent(renderer);
 }
 
-void visual_draw_array(SDL_Renderer* renderer, int* array, int size, int highlight1, int highlight2) {
+void draw_array_on_window(SDL_Renderer* renderer, int* array, int size, int highlight1, int highlight2) {
     // Calculate bar width based on window width and array size
     int bar_width = WINDOW_WIDTH / size;
     int spacing = 1; // Small gap between bars

@@ -6,7 +6,7 @@
 #include "sorting.h"
 #include "stats.h"
 
-#define ARRAY_SIZE 200
+#define ARRAY_SIZE 64
 #define DELAY_MS 1  // Delay between each step (adjust for speed)
 
 // Global variables for visualization
@@ -17,13 +17,13 @@ int g_array_size = 0;
 // Visualization callback function
 void visualize_step(int* array, int size, int highlight1, int highlight2) {
     // Clear screen
-    visual_clear(g_renderer);
+    clear_sdl_window(g_renderer);
     
     // Draw array with highlighted elements
-    visual_draw_array(g_renderer, array, size, highlight1, highlight2);
+    draw_array_on_window(g_renderer, array, size, highlight1, highlight2);
     
     // Present the frame
-    visual_present(g_renderer);
+    refresh_present_window(g_renderer);
     
     // Small delay to make animation visible
     SDL_Delay(DELAY_MS);
@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
     SDL_Renderer* renderer = NULL;
 
     // Initialize SDL and create window
-    if (visual_init(&window, &renderer) != 0) {
+    if (init_sdl_window(&window, &renderer) != 0) {
         fprintf(stderr, "Failed to initialize visual system\n");
         return 1;
     }
@@ -57,11 +57,11 @@ int main(int argc, char* argv[]) {
     int* array = (int*)malloc(ARRAY_SIZE * sizeof(int));
     if (array == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
-        visual_cleanup(window, renderer);
+        clean_up_sdl_window(window, renderer);
         return 1;
     }
 
-    generate_random_array(array, ARRAY_SIZE, 100);
+    generate_random_array(array, ARRAY_SIZE);
     printf("Array generated with %d elements\n", ARRAY_SIZE);
     
     // Set global variables for visualization callback
@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
                 }
                 else if (event.key.keysym.sym == SDLK_SPACE && !is_sorting) {
                     // Regenerate array when SPACE is pressed
-                    generate_random_array(array, ARRAY_SIZE, 100);
+                    generate_random_array(array, ARRAY_SIZE);
                     stats_reset(&stats);
                     printf("Array regenerated\n");
                 }
@@ -115,13 +115,13 @@ int main(int argc, char* argv[]) {
         }
 
         // Clear screen
-        visual_clear(renderer);
+        clear_sdl_window(renderer);
 
         // Draw array bars (no highlighting for now)
-        visual_draw_array(renderer, array, ARRAY_SIZE, -1, -1);
+        draw_array_on_window(renderer, array, ARRAY_SIZE, -1, -1);
 
         // Present the frame
-        visual_present(renderer);
+        refresh_present_window(renderer);
 
         // Small delay to avoid consuming too much CPU
         SDL_Delay(16); // ~60 FPS
@@ -129,7 +129,7 @@ int main(int argc, char* argv[]) {
 
     // Cleanup
     free(array);
-    visual_cleanup(window, renderer);
+    clean_up_sdl_window(window, renderer);
     printf("Program terminated successfully.\n");
 
     return 0;

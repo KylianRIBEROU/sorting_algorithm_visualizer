@@ -24,7 +24,7 @@ void bubble_sort(int* array, int size, Statistics* stats, VisualCallback callbac
             // Compare adjacent elements
             if (array[j] > array[j + 1]) {
                 // Swap if they are in wrong order
-                swap(&array[j], &array[j + 1]);
+                swap_int_values(&array[j], &array[j + 1]);
                 
                 // Count writes (2 writes for a swap)
                 stats_increment_write(stats);
