@@ -1,8 +1,13 @@
-//
-// Created by kylia on 27/10/2025.
-//
+#ifndef SORTING_H
+#define SORTING_H
 
-#ifndef SORTING_ALGORITHM_VISUALIZER_SORTING_H
-#define SORTING_ALGORITHM_VISUALIZER_SORTING_H
+#include "stats.h"
 
-#endif //SORTING_ALGORITHM_VISUALIZER_SORTING_H
+// Callback function type for visualization
+// Parameters: array, size, index1, index2
+typedef void (*VisualCallback)(int*, int, int, int);
+
+// Bubble Sort algorithm with visualization
+void bubble_sort(int* array, int size, Statistics* stats, VisualCallback callback);
+
+#endif
