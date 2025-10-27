@@ -51,7 +51,9 @@ int main(int argc, char* argv[]) {
     printf("Window created successfully!\n");
     printf("Press ESC or close the window to quit.\n");
     printf("Press SPACE to regenerate array.\n");
+    //TODO changer
     printf("Press ENTER to start Bubble Sort.\n");
+    printf("Press S to start Selection Sort.\n");
 
     // Create and generate array
     int* array = (int*)malloc(ARRAY_SIZE * sizeof(int));
@@ -109,6 +111,22 @@ int main(int argc, char* argv[]) {
                     printf("Memory writes: %lu\n", stats.memory_writes);
                     printf("Execution time: %.2f ms\n", stats.execution_time_ms);
                     
+                    is_sorting = 0;
+                }
+                //TODO optimiser
+                else if (event.key.keysym.sym == SDLK_s && !is_sorting) {
+                    // start selection short
+                    printf("Starting Selection Sort...\n");
+                    is_sorting = 1;
+                    stats_reset(&stats);
+                    selection_sort(array, ARRAY_SIZE, &stats, visualize_step);
+
+                    printf("Selection Sort completed!\n");
+                    printf("Comparisons: %lu\n", stats.comparisons);
+                    printf("Memory reads: %lu\n", stats.memory_reads);
+                    printf("Memory writes: %lu\n", stats.memory_writes);
+                    printf("Execution time: %.2f ms\n", stats.execution_time_ms);
+
                     is_sorting = 0;
                 }
             }
