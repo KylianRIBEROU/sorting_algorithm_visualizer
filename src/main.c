@@ -2,87 +2,99 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "visual.h"
+#include "menu.h"
 #include "utils.h"
 #include "sorting.h"
 #include "stats.h"
 
 #define ARRAY_SIZE 64
-#define DELAY_MS 1  // Delay between each step (adjust for speed)
+#define DELAY_MS 1
 
-// Global variables for visualization
+// Variables globales pour la visualisation
 SDL_Renderer* g_renderer = NULL;
 int* g_array = NULL;
 int g_array_size = 0;
 
-// Visualization callback function
+// Callback de visualisation
 void visualize_step(int* array, int size, int highlight1, int highlight2) {
-    // Clear screen
     clear_sdl_window(g_renderer);
-    
-    // Draw array with highlighted elements
     draw_array_on_window(g_renderer, array, size, highlight1, highlight2);
-    
-    // Present the frame
     refresh_present_window(g_renderer);
-    
-    // Small delay to make animation visible
     SDL_Delay(DELAY_MS);
     
-    // Handle events to keep window responsive
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
-            // User closed window during sorting
             exit(0);
         }
     }
 }
 
 int main(int argc, char* argv[]) {
-    SDL_Window* window = NULL;
-    SDL_Renderer* renderer = NULL;
+    // Fenêtres et renderers pour les deux fenêtres
+    SDL_Window* visual_window = NULL;
+    SDL_Renderer* visual_renderer = NULL;
+    SDL_Window* menu_window = NULL;
+    SDL_Renderer* menu_renderer = NULL;
 
-    // Initialize SDL and create window
-    if (init_sdl_window(&window, &renderer) != 0) {
-        fprintf(stderr, "Failed to initialize visual system\n");
+    // Initialiser SDL (une seule fois)
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        fprintf(stderr, "SDL initialization failed: %s\n", SDL_GetError());
         return 1;
     }
 
-    printf("Window created successfully!\n");
-    printf("Press ESC or close the window to quit.\n");
+    // Créer la fenêtre de visualisation
+    if (init_sdl_window(&visual_window, &visual_renderer) != 0) {
+        fprintf(stderr, "Failed to initialize visual window\n");
+        SDL_Quit();
+        return 1;
+    }
+
+    // Créer la fenêtre de menu
+    if (init_menu_window(&menu_window, &menu_renderer) != 0) {
+        fprintf(stderr, "Failed to initialize menu window\n");
+        clean_up_sdl_window(visual_window, visual_renderer);
+        SDL_Quit();
+        return 1;
+    }
+
+    printf("Both windows created successfully!\n");
+    printf("Visual window: 800x600\n");
+    printf("Menu window: 400x600\n");
+    printf("\nPress ESC or close any window to quit.\n");
     printf("Press SPACE to regenerate array.\n");
-    //TODO changer
     printf("Press ENTER to start Bubble Sort.\n");
     printf("Press S to start Selection Sort.\n");
 
-    // Create and generate array
+    // Créer et générer le tableau
     int* array = (int*)malloc(ARRAY_SIZE * sizeof(int));
     if (array == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
-        clean_up_sdl_window(window, renderer);
+        clean_up_menu_window(menu_window, menu_renderer);
+        clean_up_sdl_window(visual_window, visual_renderer);
         return 1;
     }
 
     generate_random_array(array, ARRAY_SIZE);
     printf("Array generated with %d elements\n", ARRAY_SIZE);
     
-    // Set global variables for visualization callback
-    g_renderer = renderer;
+    // Configurer les variables globales
+    g_renderer = visual_renderer;
     g_array = array;
     g_array_size = ARRAY_SIZE;
     
-    // Initialize statistics
+    // Initialiser les statistiques
     Statistics stats;
     stats_init(&stats);
     
-    int is_sorting = 0; // Flag to prevent sorting during sorting
+    int is_sorting = 0;
 
-    // Main event loop
+    // Boucle principale
     int running = 1;
     SDL_Event event;
 
     while (running) {
-        // Handle events
+        // Gérer les événements
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = 0;
@@ -92,13 +104,11 @@ int main(int argc, char* argv[]) {
                     running = 0;
                 }
                 else if (event.key.keysym.sym == SDLK_SPACE && !is_sorting) {
-                    // Regenerate array when SPACE is pressed
                     generate_random_array(array, ARRAY_SIZE);
                     stats_reset(&stats);
                     printf("Array regenerated\n");
                 }
                 else if (event.key.keysym.sym == SDLK_RETURN && !is_sorting) {
-                    // Start Bubble Sort when ENTER is pressed
                     printf("Starting Bubble Sort...\n");
                     is_sorting = 1;
                     stats_reset(&stats);
@@ -113,9 +123,7 @@ int main(int argc, char* argv[]) {
                     
                     is_sorting = 0;
                 }
-                //TODO optimiser
                 else if (event.key.keysym.sym == SDLK_s && !is_sorting) {
-                    // start selection short
                     printf("Starting Selection Sort...\n");
                     is_sorting = 1;
                     stats_reset(&stats);
@@ -132,22 +140,23 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // Clear screen
-        clear_sdl_window(renderer);
+        // Rafraîchir la fenêtre de visualisation
+        clear_sdl_window(visual_renderer);
+        draw_array_on_window(visual_renderer, array, ARRAY_SIZE, -1, -1);
+        refresh_present_window(visual_renderer);
 
-        // Draw array bars (no highlighting for now)
-        draw_array_on_window(renderer, array, ARRAY_SIZE, -1, -1);
+        // Rafraîchir la fenêtre de menu (pour l'instant juste le fond)
+        clear_menu_window(menu_renderer);
+        refresh_menu_window(menu_renderer);
 
-        // Present the frame
-        refresh_present_window(renderer);
-
-        // Small delay to avoid consuming too much CPU
         SDL_Delay(16); // ~60 FPS
     }
 
-    // Cleanup
+    // Nettoyage
     free(array);
-    clean_up_sdl_window(window, renderer);
+    clean_up_menu_window(menu_window, menu_renderer);
+    clean_up_sdl_window(visual_window, visual_renderer);
+    SDL_Quit();
     printf("Program terminated successfully.\n");
 
     return 0;
