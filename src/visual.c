@@ -78,15 +78,14 @@ void draw_array_on_window(SDL_Renderer* renderer, int* array, int size, int high
         
         // Calculate bar position
         int x = i * bar_width;
-        int y = WINDOW_HEIGHT - bar_height - 20; // 20px margin at bottom
+        int y = WINDOW_HEIGHT - bar_height - 20;
         
-        // Choose color based on highlighting or value
+        // highlight selected bar ( element of the list being sorted ) in white
         if (i == highlight1 || i == highlight2) {
-            // Highlighted bars (bright yellow)
             SDL_SetRenderDrawColor(renderer, 255, 255, 100, 255);
         } else {
             // Create gradient color based on value
-            // Low values -> Blue/Cyan, High values -> Red/Orange
+            // Low values -> blue, high values -> Red/orange
             float ratio = (float)array[i] / (float)max_value;
             
             int r, g, b;

@@ -7,7 +7,7 @@
 #include "stats.h"
 
 #define ARRAY_SIZE 64
-#define DELAY_MS 1  // Delay between each step (adjust for speed)
+#define DELAY_MS 10  // Delay between each step (adjust for speed)
 
 // Global variables for visualization
 SDL_Renderer* g_renderer = NULL;
@@ -54,6 +54,9 @@ int main(int argc, char* argv[]) {
     //TODO changer
     printf("Press ENTER to start Bubble Sort.\n");
     printf("Press S to start Selection Sort.\n");
+    printf("Press Q to start Quick Sort.\n");
+    printf("Press M to start Merge Sort.\n");
+    printf("Press I to start Insertion Sort.\n");
 
     // Create and generate array
     int* array = (int*)malloc(ARRAY_SIZE * sizeof(int));
@@ -122,6 +125,51 @@ int main(int argc, char* argv[]) {
                     selection_sort(array, ARRAY_SIZE, &stats, visualize_step);
 
                     printf("Selection Sort completed!\n");
+                    printf("Comparisons: %lu\n", stats.comparisons);
+                    printf("Memory reads: %lu\n", stats.memory_reads);
+                    printf("Memory writes: %lu\n", stats.memory_writes);
+                    printf("Execution time: %.2f ms\n", stats.execution_time_ms);
+
+                    is_sorting = 0;
+                }
+                else if (event.key.keysym.sym == SDLK_i && !is_sorting) {
+                    // start selection short
+                    printf("Starting Insertion Sort...\n");
+                    is_sorting = 1;
+                    stats_reset(&stats);
+                    insertion_sort(array, ARRAY_SIZE, &stats, visualize_step);
+
+                    printf("Insertion Sort completed!\n");
+                    printf("Comparisons: %lu\n", stats.comparisons);
+                    printf("Memory reads: %lu\n", stats.memory_reads);
+                    printf("Memory writes: %lu\n", stats.memory_writes);
+                    printf("Execution time: %.2f ms\n", stats.execution_time_ms);
+
+                    is_sorting = 0;
+                }
+                else if (event.key.keysym.sym == SDLK_m && !is_sorting) {
+                    // start selection short
+                    printf("Starting Merge Sort...\n");
+                    is_sorting = 1;
+                    stats_reset(&stats);
+                    merge_sort(array, ARRAY_SIZE, &stats, visualize_step);
+
+                    printf("Merge Sort completed!\n");
+                    printf("Comparisons: %lu\n", stats.comparisons);
+                    printf("Memory reads: %lu\n", stats.memory_reads);
+                    printf("Memory writes: %lu\n", stats.memory_writes);
+                    printf("Execution time: %.2f ms\n", stats.execution_time_ms);
+
+                    is_sorting = 0;
+                }
+                else if (event.key.keysym.sym == SDLK_q && !is_sorting) {
+                    // start selection short
+                    printf("Starting QuickSort...\n");
+                    is_sorting = 1;
+                    stats_reset(&stats);
+                    quick_sort(array, ARRAY_SIZE, &stats, visualize_step);
+
+                    printf("Quick Sort completed!\n");
                     printf("Comparisons: %lu\n", stats.comparisons);
                     printf("Memory reads: %lu\n", stats.memory_reads);
                     printf("Memory writes: %lu\n", stats.memory_writes);
