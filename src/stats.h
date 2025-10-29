@@ -5,6 +5,8 @@ typedef struct {
     unsigned long memory_reads;
     unsigned long memory_writes;
     unsigned long comparisons;
+    // start time
+    unsigned long start_time;
     double execution_time_ms;
 } Statistics;
 
@@ -21,6 +23,7 @@ void stats_increment_comparison(Statistics* stats);
 
 // Time measurement
 void stats_start_timer(Statistics* stats);
+void stats_update_timer(Statistics* stats);
 void stats_stop_timer(Statistics* stats);
 
 #endif

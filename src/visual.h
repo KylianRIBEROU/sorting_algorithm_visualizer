@@ -3,6 +3,8 @@
 
 #include <SDL2/SDL.h>
 
+#include "stats.h"
+
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 #define UI_HEIGHT 60
@@ -40,7 +42,7 @@ void refresh_present_window(SDL_Renderer* renderer);
 
 // Draw array as vertical bars
 // highlight1 and highlight2 are indices to highlight (-1 if none)
-void draw_array_on_window(SDL_Renderer* renderer, int* array, int size, int highlight1, int highlight2);
+void draw_array_on_window(SDL_Renderer* renderer, int* array, int size, int highlight1, int highlight2, Statistics* stats);
 
 // Initialise SDL_ttf et charge une police depuis font_path (retourne 0 si OK)
 int init_ttf_and_load_font(const char* font_path, int font_size);

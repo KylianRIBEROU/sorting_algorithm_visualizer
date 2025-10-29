@@ -5,7 +5,7 @@
 
 // Callback function type for visualization
 // Parameters: array, size, index1, index2
-typedef void (*VisualCallback)(int*, int, int, int);
+typedef void (*VisualCallback)(int*, int, int, int, Statistics*);
 
 // the VisualCallback parameter is a pointer toward the function that is to be called. You can pass any function in the constructor
 // of a SortingAlgorithm, as long as it respects the type definition of the method ( detailed in typedef VisualCallback )

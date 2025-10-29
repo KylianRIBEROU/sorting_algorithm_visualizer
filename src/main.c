@@ -15,7 +15,7 @@ int* g_array = NULL;
 int g_array_size = 0;
 
 // Visualization callback function
-void visualize_step(int* array, int size, int highlight1, int highlight2) {
+void visualize_step(int* array, int size, int highlight1, int highlight2, Statistics* stats) {
     // Clear screen
     clear_sdl_window(g_renderer);
 
@@ -23,7 +23,7 @@ void visualize_step(int* array, int size, int highlight1, int highlight2) {
     draw_ui(g_renderer);
     
     // Draw array with highlighted elements
-    draw_array_on_window(g_renderer, array, size, highlight1, highlight2);
+    draw_array_on_window(g_renderer, array, size, highlight1, highlight2, stats);
     
     // Present the frame
     refresh_present_window(g_renderer);
@@ -53,8 +53,8 @@ int main(int argc, char* argv[]) {
 
     // Initialize TTF and load font (mettre le fichier de font dans assets/fonts/)
     if (init_ttf_and_load_font("assets/fonts/arial_bold.ttf", 16) != 0) {
-        fprintf(stderr, "Warning: font loading failed, button labels will be hidden\n");
-        // pas fatal : on continue sans texte
+        fprintf(stderr, "Error: font loading failed.\n");
+        return EXIT_FAILURE;
     }
     // Initialize UI buttons
     init_ui_buttons();
@@ -229,12 +229,10 @@ int main(int argc, char* argv[]) {
         // Clear screen
         clear_sdl_window(renderer);
 
-      
         // Draw UI (boutons)
         draw_ui(renderer);
-
         // Draw array bars (no highlighting for now)
-        draw_array_on_window(renderer, array, ARRAY_SIZE, -1, -1);
+        draw_array_on_window(renderer, array, ARRAY_SIZE, -1, -1,  &stats);
 
         // Present the frame
         refresh_present_window(renderer);

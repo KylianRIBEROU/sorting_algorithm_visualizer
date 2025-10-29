@@ -53,7 +53,8 @@ void bubble_sort(int* array, int size, Statistics* stats, VisualCallback callbac
             
             // Call visualization callback to show comparison
             if (callback != NULL) {
-                callback(array, size, j, j + 1);
+                stats_update_timer(stats);
+                callback(array, size, j, j + 1, stats);
             }
             
             // Compare adjacent elements
@@ -69,7 +70,8 @@ void bubble_sort(int* array, int size, Statistics* stats, VisualCallback callbac
                 
                 // Show the swap visually
                 if (callback != NULL) {
-                    callback(array, size, j, j + 1);
+                    stats_update_timer(stats);
+                    callback(array, size, j, j + 1, stats);
                 }
             }
         }
@@ -97,7 +99,8 @@ void selection_sort(int* array, int size, Statistics* stats, VisualCallback call
             stats_increment_read(stats);
 
             if (callback != NULL) {
-                callback(array, size, j, min_index);
+                stats_update_timer(stats);
+                callback(array, size, j, min_index, stats);
             }
 
             if (array[j] < array[min_index]) {
@@ -112,7 +115,8 @@ void selection_sort(int* array, int size, Statistics* stats, VisualCallback call
             stats_increment_write(stats);
 
             if (callback != NULL) {
-                callback(array, size, i, min_index);
+                stats_update_timer(stats);
+                callback(array, size, i, min_index, stats);
             }
         }
     }
@@ -135,7 +139,8 @@ void insertion_sort(int* array, int size, Statistics* stats, VisualCallback call
             stats_increment_read(stats);
 
             if (callback != NULL) {
-                callback(array, size, j, j + 1);
+                stats_update_timer(stats);
+                callback(array, size, j, j + 1, stats);
             }
 
             if (array[j] > key) {
@@ -143,7 +148,8 @@ void insertion_sort(int* array, int size, Statistics* stats, VisualCallback call
                 stats_increment_write(stats);
 
                 if (callback != NULL) {
-                    callback(array, size, j, j + 1);
+                    stats_update_timer(stats);
+                    callback(array, size, j, j + 1, stats);
                 }
 
                 j--;
@@ -180,7 +186,8 @@ static void quick_sort_recursive(
         stats_increment_read(stats);
 
         if (callback != NULL) {
-            callback(full_array, full_size, j, high);
+            stats_update_timer(stats);
+            callback(full_array, full_size, j, high, stats);
         }
 
         if (array[j] < pivot) {
@@ -190,7 +197,8 @@ static void quick_sort_recursive(
             stats_increment_write(stats);
 
             if (callback != NULL) {
-                callback(full_array, full_size, i, j);
+                stats_update_timer(stats);
+                callback(full_array, full_size, i, j, stats);
             }
         }
     }
@@ -200,7 +208,8 @@ static void quick_sort_recursive(
     stats_increment_write(stats);
 
     if (callback != NULL) {
-        callback(full_array, full_size, i + 1, high);
+        stats_update_timer(stats);
+        callback(full_array, full_size, i + 1, high, stats);
     }
 
     int p = i + 1;
@@ -239,9 +248,10 @@ static void merge(int* array, int left, int mid, int right, int* full_array,
         stats_increment_read(stats);
         stats_increment_read(stats);
 
-        if (callback != NULL)
-            callback(full_array, full_size, left + i, mid + 1 + j);
-
+        if (callback != NULL) {
+            stats_update_timer(stats);
+            callback(full_array, full_size, left + i, mid + 1 + j, stats);
+        }
         if (L[i] <= R[j]) {
             array[k] = L[i];
             stats_increment_write(stats);

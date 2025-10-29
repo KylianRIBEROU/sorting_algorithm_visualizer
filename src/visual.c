@@ -1,6 +1,12 @@
 #include "visual.h"
-#include <stdio.h>
+
+
+#include "stats.h"
+
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+
+#include <stdio.h>
 
 
 static SDL_Rect g_button_rects[BTN_COUNT];
@@ -184,40 +190,42 @@ int button_id_from_mouse(int x, int y) {
     return -1;
 }
 
-
-
-void draw_array_on_window(SDL_Renderer* renderer, int* array, int size, int highlight1, int highlight2) {
-    // Calculate bar width based on window width and array size
-    int bar_width = WINDOW_WIDTH / size;
-    int spacing = 1; // Small gap between bars
-    
     // Find max value for color scaling
+void draw_array_on_window(SDL_Renderer* renderer, int* array, int size,
+                          int highlight1, int highlight2, Statistics* stats) {
+
+    // Reduce bar width to make gaps between bars more visible
+    int bar_width = (WINDOW_WIDTH / size) - 1;
+    int spacing = 1;
+
+    // Find max value for scaling
     int max_value = 0;
     for (int i = 0; i < size; i++) {
         if (array[i] > max_value) {
             max_value = array[i];
         }
     }
-    
+
+    // Draw bars
     for (int i = 0; i < size; i++) {
         // Calculate bar height (proportional to value)
         // Leave some margin at top and bottom + space for UI
         int max_bar_height = WINDOW_HEIGHT - 50 - UI_HEIGHT;
         if (max_bar_height < 10) max_bar_height = WINDOW_HEIGHT - 50;
         int bar_height = (array[i] * max_bar_height) / max_value;
-        
+
         // Calculate bar position (shift down by UI_HEIGHT)
         int x = i * bar_width;
         int y = WINDOW_HEIGHT - bar_height - 20;
         y = y; // bars will appear below UI because max_bar_height reserved
-  
+
         // highlight selected bar ( element of the list being sorted ) in yellow
         if (i == highlight1 || i == highlight2) {
             SDL_SetRenderDrawColor(renderer, 255, 255, 100, 255);
         } else {
             // Create gradient color based on value
             float ratio = (float)array[i] / (float)max_value;
-            
+
             int r, g, b;
             if (ratio < 0.5f) {
                 float local_ratio = ratio * 2.0f;
@@ -230,9 +238,10 @@ void draw_array_on_window(SDL_Renderer* renderer, int* array, int size, int high
                 g = (int)(255 - local_ratio * 155);
                 b = (int)(100 * (1.0f - local_ratio));
             }
-            
+
             SDL_SetRenderDrawColor(renderer, r, g, b, 255);
         }
+
         // Draw the bar
         SDL_Rect bar = {
             x + spacing,
@@ -242,4 +251,27 @@ void draw_array_on_window(SDL_Renderer* renderer, int* array, int size, int high
         };
         SDL_RenderFillRect(renderer, &bar);
     }
+
+    // === Draw statistics text ===
+    if (g_font != NULL && stats != NULL) {
+        char stats_text[256];
+        snprintf(stats_text, sizeof(stats_text),
+                 "Comparisons: %lu   Reads: %lu   Writes: %lu   Time: %.2f ms",
+                 stats->comparisons,
+                 stats->memory_reads,
+                 stats->memory_writes,
+                 stats->execution_time_ms);
+
+        SDL_Color textColor = {255, 255, 255, 255};
+
+        SDL_Surface* textSurface = TTF_RenderUTF8_Blended(g_font, stats_text, textColor);
+        if (textSurface) {
+            SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+            SDL_Rect textRect = {10, UI_HEIGHT + 5, textSurface->w, textSurface->h};
+            SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+            SDL_FreeSurface(textSurface);
+            SDL_DestroyTexture(textTexture);
+        }
+    }
+
 }
