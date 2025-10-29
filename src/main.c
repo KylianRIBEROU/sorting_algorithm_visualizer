@@ -7,7 +7,7 @@
 #include "stats.h"
 
 #define ARRAY_SIZE 64
-#define DELAY_MS 10  // Delay between each step (adjust for speed)
+#define DELAY_MS 1  // Delay between each step (adjust for speed)
 
 // Global variables for visualization
 SDL_Renderer* g_renderer = NULL;
@@ -18,6 +18,9 @@ int g_array_size = 0;
 void visualize_step(int* array, int size, int highlight1, int highlight2) {
     // Clear screen
     clear_sdl_window(g_renderer);
+
+    // Draw UI (buttons)
+    draw_ui(g_renderer);
     
     // Draw array with highlighted elements
     draw_array_on_window(g_renderer, array, size, highlight1, highlight2);
@@ -48,17 +51,15 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    printf("Window created successfully!\n");
-    printf("Press ESC or close the window to quit.\n");
-    printf("Press SPACE to regenerate array.\n");
-    //TODO changer
-    printf("Press ENTER to start Bubble Sort.\n");
-    printf("Press S to start Selection Sort.\n");
-    printf("Press Q to start Quick Sort.\n");
-    printf("Press M to start Merge Sort.\n");
-    printf("Press I to start Insertion Sort.\n");
-
+    // Initialize TTF and load font (mettre le fichier de font dans assets/fonts/)
+    if (init_ttf_and_load_font("assets/fonts/arial_bold.ttf", 16) != 0) {
+        fprintf(stderr, "Warning: font loading failed, button labels will be hidden\n");
+        // pas fatal : on continue sans texte
+    }
+    // Initialize UI buttons
+    init_ui_buttons();
     // Create and generate array
+
     int* array = (int*)malloc(ARRAY_SIZE * sizeof(int));
     if (array == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
@@ -178,10 +179,59 @@ int main(int argc, char* argv[]) {
                     is_sorting = 0;
                 }
             }
+            else if (event.type == SDL_MOUSEBUTTONDOWN) {
+                if (event.button.button == SDL_BUTTON_LEFT && !is_sorting) {
+                    int bx = event.button.x;
+                    int by = event.button.y;
+                    int bid = button_id_from_mouse(bx, by);
+                    if (bid >= 0) {
+                        // map button ids to actions (ne pas oublier le verrou is_sorting)
+                        if (bid == BTN_BUBBLE) {
+                            printf("Starting Bubble Sort (button)...\n");
+                            is_sorting = 1;
+                            stats_reset(&stats);
+                            bubble_sort(array, ARRAY_SIZE, &stats, visualize_step);
+                            is_sorting = 0;
+                        } else if (bid == BTN_SELECTION) {
+                            printf("Starting Selection Sort (button)...\n");
+                            is_sorting = 1;
+                            stats_reset(&stats);
+                            selection_sort(array, ARRAY_SIZE, &stats, visualize_step);
+                            is_sorting = 0;
+                        } else if (bid == BTN_QUICK) {
+                            printf("Starting Quick Sort (button)...\n");
+                            is_sorting = 1;
+                            stats_reset(&stats);
+                            quick_sort(array, ARRAY_SIZE, &stats, visualize_step);
+                            is_sorting = 0;
+                        } else if (bid == BTN_MERGE) {
+                            printf("Starting Merge Sort (button)...\n");
+                            is_sorting = 1;
+                            stats_reset(&stats);
+                            merge_sort(array, ARRAY_SIZE, &stats, visualize_step);
+                            is_sorting = 0;
+                        } else if (bid == BTN_INSERTION) {
+                            printf("Starting Insertion Sort (button)...\n");
+                            is_sorting = 1;
+                            stats_reset(&stats);
+                            insertion_sort(array, ARRAY_SIZE, &stats, visualize_step);
+                            is_sorting = 0;
+                        } else if (bid == BTN_SHUFFLE) {
+                            printf("Shuffling array (button)...\n");
+                            generate_random_array(array, ARRAY_SIZE);
+                            stats_reset(&stats);
+                        }
+                    }
+                }
+            }
         }
 
         // Clear screen
         clear_sdl_window(renderer);
+
+      
+        // Draw UI (boutons)
+        draw_ui(renderer);
 
         // Draw array bars (no highlighting for now)
         draw_array_on_window(renderer, array, ARRAY_SIZE, -1, -1);
@@ -195,6 +245,7 @@ int main(int argc, char* argv[]) {
 
     // Cleanup
     free(array);
+    close_ttf_font();
     clean_up_sdl_window(window, renderer);
     printf("Program terminated successfully.\n");
 
