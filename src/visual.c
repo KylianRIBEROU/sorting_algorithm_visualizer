@@ -5,7 +5,7 @@
 
 static SDL_Rect g_button_rects[BTN_COUNT];
 static const char* g_button_labels[BTN_COUNT] = {
-    "Bubble", "Selection", "Quick", "Merge", "Insertion", "Shuffle"
+    "Bubble", "Selection", "Quick", "Merge", "Insertion", "Shuffle", "Speed +", "Speed -"
 };
 
 static TTF_Font* g_font = NULL;
@@ -149,6 +149,8 @@ void draw_ui(SDL_Renderer* renderer) {
             case BTN_MERGE:     SDL_SetRenderDrawColor(renderer, 218, 165, 32, 255); break; // goldenrod
             case BTN_INSERTION: SDL_SetRenderDrawColor(renderer, 138, 43, 226, 255); break; // blueviolet
             case BTN_SHUFFLE:   SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255); break; // gray
+            case BTN_UP_SPEED:  SDL_SetRenderDrawColor(renderer, 155, 100, 100, 255); break; // gray
+            case BTN_DOWN_SPEED:SDL_SetRenderDrawColor(renderer, 100, 156, 100, 255); break; // gray
             default:            SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255); break;
         }
 

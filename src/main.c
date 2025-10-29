@@ -7,12 +7,13 @@
 #include "stats.h"
 
 #define ARRAY_SIZE 64
-#define DELAY_MS 1  // Delay between each step (adjust for speed)
+// #define DELAY_MS 1  // Delay between each step (adjust for speed)
 
 // Global variables for visualization
 SDL_Renderer* g_renderer = NULL;
 int* g_array = NULL;
 int g_array_size = 0;
+int g_delay_ms = 1; // valeur initiale ; tu peux changer ici
 
 // Visualization callback function
 void visualize_step(int* array, int size, int highlight1, int highlight2) {
@@ -29,7 +30,7 @@ void visualize_step(int* array, int size, int highlight1, int highlight2) {
     refresh_present_window(g_renderer);
     
     // Small delay to make animation visible
-    SDL_Delay(DELAY_MS);
+    SDL_Delay(g_delay_ms);
     
     // Handle events to keep window responsive
     SDL_Event event;
@@ -37,6 +38,22 @@ void visualize_step(int* array, int size, int highlight1, int highlight2) {
         if (event.type == SDL_QUIT) {
             // User closed window during sorting
             exit(0);
+        }
+        else if (event.type == SDL_MOUSEBUTTONDOWN) {
+            if (event.button.button == SDL_BUTTON_LEFT) {
+                int bx = event.button.x;
+                int by = event.button.y;
+                int bid = button_id_from_mouse(bx, by);
+                if (bid >= 0) {
+                    if (bid == BTN_UP_SPEED) {
+                        if (g_delay_ms > 0) g_delay_ms -= 1;
+                        printf("Increased speed, delay is now %d ms\n", g_delay_ms);
+                    } else if (bid == BTN_DOWN_SPEED) {
+                        g_delay_ms += 1;
+                        printf("Decreased speed, delay is now %d ms\n", g_delay_ms);
+                    }
+                }
+            }
         }
     }
 }
@@ -220,6 +237,12 @@ int main(int argc, char* argv[]) {
                             printf("Shuffling array (button)...\n");
                             generate_random_array(array, ARRAY_SIZE);
                             stats_reset(&stats);
+                        } else if (bid == BTN_UP_SPEED) {
+                            if (g_delay_ms > 0) g_delay_ms -= 1;
+                            printf("Increased speed, delay is now %d ms\n", g_delay_ms);
+                        } else if (bid == BTN_DOWN_SPEED) {
+                            g_delay_ms += 1;
+                            printf("Decreased speed, delay is now %d ms\n", g_delay_ms);
                         }
                     }
                 }

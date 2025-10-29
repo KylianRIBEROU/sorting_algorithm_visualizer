@@ -14,6 +14,8 @@ typedef enum {
     BTN_MERGE,
     BTN_INSERTION,
     BTN_SHUFFLE,
+    BTN_UP_SPEED,
+    BTN_DOWN_SPEED,
     BTN_COUNT
 } ButtonId;
 
@@ -50,5 +52,6 @@ void close_ttf_font(void);
 
 // Dessine du texte centré dans un rectangle (utilisé pour les labels de boutons)
 void draw_text_centered(SDL_Renderer* renderer, const char* text, SDL_Rect rect, SDL_Color color);
+
 
 #endif
